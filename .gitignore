@@ -3,9 +3,10 @@ tbl_attendance_log.sql/
 tbl_attendance_log.sql
 README.md
 
-# Database dumps & SQL files
+# Database dumps & CSV/SQL files
 *.sql
 *.sqlite
+*.csv
 
 # Backend dependencies & environment
 /backend/vendor/
