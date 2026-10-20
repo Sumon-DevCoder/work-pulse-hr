@@ -1,0 +1,32 @@
+# Ignored files requested
+tbl_attendance_log.sql/
+tbl_attendance_log.sql
+README.md
+
+# Database dumps & SQL files
+*.sql
+*.sqlite
+
+# Backend dependencies & environment
+/backend/vendor/
+/backend/.env
+/backend/.env.backup
+/backend/.env.production
+/backend/storage/*.key
+/backend/storage/logs/
+/backend/storage/framework/cache/
+/backend/storage/framework/sessions/
+/backend/storage/framework/views/
+
+# Frontend dependencies & build artifacts
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.env*.local
+
+# Logs and system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
