@@ -1,7 +1,7 @@
 FROM php:8.3-cli-alpine
 
 # Install system dependencies and MySQL PDO extension
-RUN apk add --no-cache bash \
+RUN apk add --no-cache bash ca-certificates \
     && docker-php-ext-install pdo pdo_mysql
 
 # Install Composer
