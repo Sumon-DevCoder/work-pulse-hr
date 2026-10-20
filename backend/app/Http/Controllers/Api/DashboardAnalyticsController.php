@@ -18,19 +18,27 @@ class DashboardAnalyticsController extends Controller
      */
     public function analytics(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'from_date' => 'nullable|date_format:Y-m-d',
-            'to_date' => 'nullable|date_format:Y-m-d',
-        ]);
+        try {
+            $validated = $request->validate([
+                'from_date' => 'nullable|date_format:Y-m-d',
+                'to_date' => 'nullable|date_format:Y-m-d',
+            ]);
 
-        $result = $this->reportService->getDashboardAnalytics(
-            $validated['from_date'] ?? null,
-            $validated['to_date'] ?? null
-        );
+            $result = $this->reportService->getDashboardAnalytics(
+                $validated['from_date'] ?? null,
+                $validated['to_date'] ?? null
+            );
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $result,
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'data' => $result,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+            ], 200);
+        }
     }
 }
