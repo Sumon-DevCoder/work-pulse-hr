@@ -245,26 +245,22 @@ class AttendanceReportService
         // Calculate total days
         $totalDays = (int) $startDate->diffInDays($endDate) + 1;
 
-        // Optimized Daily Total Working Hours Query
-        $dailyTotals = DB::table(function ($query) use ($fromDate, $toDate) {
-            $query->from('tbl_attendance_log')
-                ->select([
-                    'Date',
-                    'emp_id',
-                    DB::raw("TIMESTAMPDIFF(SECOND, MIN(CASE WHEN in_out = 'logIN' THEN date_time END), MAX(CASE WHEN in_out = 'logOUT' THEN date_time END)) AS day_seconds"),
-                ])
+        try {
+            $subQuery = DB::table('tbl_attendance_log')
+                ->selectRaw('`Date` as `work_date`, `emp_id`, TIMESTAMPDIFF(SECOND, MIN(CASE WHEN `in_out` = "logIN" THEN `date_time` END), MAX(CASE WHEN `in_out` = "logOUT" THEN `date_time` END)) AS `day_seconds`')
                 ->whereBetween('Date', [$fromDate, $toDate])
                 ->groupBy('Date', 'emp_id');
-        }, 'daily_emp')
-        ->select([
-            'Date as date',
-            DB::raw("ROUND(SUM(day_seconds) / 3600, 2) as total_working_hours"),
-            DB::raw("COUNT(DISTINCT emp_id) as total_active_employees"),
-        ])
-        ->groupBy('Date')
-        ->orderBy('Date', 'asc')
-        ->get()
-        ->keyBy('date');
+
+            $dailyTotals = DB::query()->fromSub($subQuery, 'daily_emp')
+                ->selectRaw('`work_date` as `date`, ROUND(COALESCE(SUM(`day_seconds`), 0) / 3600, 2) as `total_working_hours`, COUNT(DISTINCT `emp_id`) as `total_active_employees`')
+                ->groupBy('work_date')
+                ->orderBy('work_date', 'asc')
+                ->get()
+                ->keyBy('date');
+        } catch (\Throwable $e) {
+            \Log::error('Dashboard analytics error: ' . $e->getMessage());
+            $dailyTotals = collect();
+        }
 
         // Ensure every single date in the range has a bar (zero-filled if no punches)
         $chartData = [];
