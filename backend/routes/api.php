@@ -26,13 +26,11 @@ Route::prefix('v1')->group(function () {
     });
 
     // 3. Dashboard Analytics & Dynamic Bar Chart (30-second live polling)
-    Route::get('/dashboard/analytics', [DashboardAnalyticsController::class, 'analytics'])
-        ->middleware('throttle:120,1');
+    Route::get('/dashboard/analytics', [DashboardAnalyticsController::class, 'analytics']);
 });
 
 // Backward-compatible unversioned aliases
 Route::get('/employees', [EmployeeController::class, 'index']);
 Route::get('/reports/in-out', [AttendanceReportController::class, 'inOutReport']);
 Route::get('/reports/working-hours', [AttendanceReportController::class, 'workingHoursReport']);
-Route::get('/dashboard/analytics', [DashboardAnalyticsController::class, 'analytics'])
-    ->middleware('throttle:120,1');
+Route::get('/dashboard/analytics', [DashboardAnalyticsController::class, 'analytics']);
