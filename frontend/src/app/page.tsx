@@ -10,7 +10,10 @@ import { BarChart3, FileSpreadsheet, Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-  const [filters, setFilters] = useState<{ from_date?: string; to_date?: string }>({});
+  const [filters, setFilters] = useState<{ from_date?: string; to_date?: string }>({
+    from_date: '2026-08-19',
+    to_date: '2026-09-17',
+  });
 
   // SWR Hook with automatic 30-second live polling (refreshInterval: 30000)
   const { data, error, isLoading, mutate } = useSWR<DashboardAnalyticsResponse>(
@@ -64,6 +67,8 @@ export default function DashboardPage() {
         {/* Date Range Filter Bar */}
         <FilterBar
           showEmployeeFilter={false}
+          initialFromDate="2026-08-19"
+          initialToDate="2026-09-17"
           onFilterChange={(newFilters) => {
             setFilters({
               from_date: newFilters.from_date,

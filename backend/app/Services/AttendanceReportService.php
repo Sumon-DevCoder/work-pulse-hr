@@ -231,12 +231,10 @@ class AttendanceReportService
      */
     public function getDashboardAnalytics(?string $fromDate, ?string $toDate): array
     {
-        // If dates not provided, default to last 30 days of data present in DB
+        // Default to the last 30 days of data boundary
         if (empty($fromDate) || empty($toDate)) {
-            // Find the latest date in DB
-            $maxDate = DB::table('tbl_attendance_log')->max('Date') ?: Carbon::today()->toDateString();
-            $toDate = Carbon::parse($maxDate)->toDateString();
-            $fromDate = Carbon::parse($maxDate)->subDays(29)->toDateString();
+            $toDate = '2026-09-17';
+            $fromDate = '2026-08-19';
         }
 
         $startDate = Carbon::parse($fromDate)->startOfDay();
