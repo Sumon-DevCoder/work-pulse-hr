@@ -1,4 +1,15 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+export function getApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== 'undefined') {
+    const isRemoteHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    if (isRemoteHost && (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
+      return 'https://workpulse-api-6g14.onrender.com/api';
+    }
+  }
+  return envUrl || 'http://localhost:8000/api';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface Employee {
   id: string | number;
@@ -92,7 +103,8 @@ export async function fetchApi<T>(endpoint: string, params: Record<string, any> 
   });
 
   const queryString = query.toString();
-  const url = `${API_BASE_URL}${endpoint}${queryString ? `?${queryString}` : ''}`;
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}${endpoint}${queryString ? `?${queryString}` : ''}`;
 
   const res = await fetch(url, {
     headers: {
