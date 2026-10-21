@@ -27,11 +27,14 @@ class AttendanceReportService
         $sortDir = strtolower($params['sort_dir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
         $columnFilters = $params['filters'] ?? [];
 
+        // Fallback default date range if neither date nor employee is specified (prevents full 1.1M unconstrained scan)
+        if (empty($fromDate) && empty($toDate) && empty($empId)) {
+            $fromDate = '2026-01-01';
+            $toDate = '2026-01-01';
+        }
+
         $query = DB::table('tbl_attendance_log as l')
-            ->leftJoin('tbl_employee as e', function ($join) {
-                $join->on('e.id', '=', 'l.emp_id')
-                     ->orOn('e.emp_id', '=', 'l.emp_id');
-            })
+            ->leftJoin('tbl_employee as e', 'e.id', '=', 'l.emp_id')
             ->select([
                 'l.id',
                 'l.emp_id',
@@ -43,11 +46,11 @@ class AttendanceReportService
                 'l.attendance_type',
             ]);
 
-        // 1. Employee Filter (Specific ID or ALL)
+        // 1. Employee Filter (Specific ID or Name or ALL)
         if (!empty($empId) && strtolower($empId) !== 'all') {
             $query->where(function ($q) use ($empId) {
                 $q->where('l.emp_id', $empId)
-                  ->orWhere('e.emp_id', $empId);
+                  ->orWhere('e.emp_name', 'like', "%{$empId}%");
             });
         }
 
@@ -132,12 +135,15 @@ class AttendanceReportService
         $sortDir = strtolower($params['sort_dir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
         $columnFilters = $params['filters'] ?? [];
 
+        // Fallback default date range if neither date nor employee is specified (prevents full 1.1M unconstrained group-by)
+        if (empty($fromDate) && empty($toDate) && empty($empId)) {
+            $fromDate = '2026-01-01';
+            $toDate = '2026-01-30';
+        }
+
         // Build base aggregation subquery
         $query = DB::table('tbl_attendance_log as l')
-            ->leftJoin('tbl_employee as e', function ($join) {
-                $join->on('e.id', '=', 'l.emp_id')
-                     ->orOn('e.emp_id', '=', 'l.emp_id');
-            })
+            ->leftJoin('tbl_employee as e', 'e.id', '=', 'l.emp_id')
             ->select([
                 'l.emp_id',
                 DB::raw("COALESCE(e.emp_name, CONCAT('Employee #', l.emp_id)) as emp_name"),
@@ -153,7 +159,7 @@ class AttendanceReportService
         if (!empty($empId) && strtolower($empId) !== 'all') {
             $query->where(function ($q) use ($empId) {
                 $q->where('l.emp_id', $empId)
-                  ->orWhere('e.emp_id', $empId);
+                  ->orWhere('e.emp_name', 'like', "%{$empId}%");
             });
         }
 
@@ -356,11 +362,13 @@ class AttendanceReportService
 
         // Also query distinct IDs from attendance logs if search is a specific ID
         if (!empty($search) && $results->isEmpty()) {
-            $logIds = DB::table('tbl_attendance_log')
-                ->where('emp_id', 'like', "%{$search}%")
-                ->distinct()
-                ->limit(20)
-                ->pluck('emp_id');
+            $queryLog = DB::table('tbl_attendance_log');
+            if (is_numeric($search)) {
+                $queryLog->where('emp_id', 'like', "{$search}%");
+            } else {
+                $queryLog->where('emp_id', $search);
+            }
+            $logIds = $queryLog->distinct()->limit(20)->pluck('emp_id');
 
             return $logIds->map(function ($id) {
                 return (object) [
