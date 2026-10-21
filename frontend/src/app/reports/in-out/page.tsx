@@ -50,7 +50,7 @@ export default function InOutReportPage() {
       search: globalSearch,
       sort_by: sortBy,
       sort_dir: sortDir,
-      ...columnFilters,
+      filters: columnFilters,
     })
       .then((res) => {
         if (isMounted) setData(res);
@@ -132,6 +132,28 @@ export default function InOutReportPage() {
 
         {/* Data Table Panel */}
         <div className="glass-panel rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+          {/* Spec Header Banner */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-slate-900/95 border-b border-slate-800">
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wide uppercase">In-Out Report</h2>
+              <p className="text-xs font-mono text-indigo-400 mt-0.5">
+                From:{' '}
+                <span className="text-slate-200">
+                  {topFilters.from_date ? topFilters.from_date.split('-').reverse().join('-') : 'All'}
+                </span>{' '}
+                To:{' '}
+                <span className="text-slate-200">
+                  {topFilters.to_date ? topFilters.to_date.split('-').reverse().join('-') : 'All'}
+                </span>
+              </p>
+            </div>
+            {data?.meta && (
+              <span className="text-xs text-slate-400 font-mono">
+                Total Records: <strong className="text-indigo-300">{data.meta.total.toLocaleString()}</strong>
+              </span>
+            )}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               {/* Header */}

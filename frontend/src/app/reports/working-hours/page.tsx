@@ -27,6 +27,7 @@ export default function WorkingHoursReportPage() {
     designation?: string;
     login_time?: string;
     logout_time?: string;
+    working_hour?: string;
   }>({});
   const [sortBy, setSortBy] = useState('date');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -49,7 +50,7 @@ export default function WorkingHoursReportPage() {
       search: globalSearch,
       sort_by: sortBy,
       sort_dir: sortDir,
-      ...columnFilters,
+      filters: columnFilters,
     })
       .then((res) => {
         if (isMounted) setData(res);
@@ -131,6 +132,28 @@ export default function WorkingHoursReportPage() {
 
         {/* Data Table Panel */}
         <div className="glass-panel rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+          {/* Spec Header Banner */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-slate-900/95 border-b border-slate-800">
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wide uppercase">Attendance Report</h2>
+              <p className="text-xs font-mono text-cyan-400 mt-0.5">
+                From:{' '}
+                <span className="text-slate-200">
+                  {topFilters.from_date ? topFilters.from_date.split('-').reverse().join('-') : 'All'}
+                </span>{' '}
+                To:{' '}
+                <span className="text-slate-200">
+                  {topFilters.to_date ? topFilters.to_date.split('-').reverse().join('-') : 'All'}
+                </span>
+              </p>
+            </div>
+            {data?.meta && (
+              <span className="text-xs text-slate-400 font-mono">
+                Total Records: <strong className="text-cyan-300">{data.meta.total.toLocaleString()}</strong>
+              </span>
+            )}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               {/* Table Header */}
@@ -249,8 +272,14 @@ export default function WorkingHoursReportPage() {
                       className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
                     />
                   </th>
-                  <th className="p-2 text-center text-slate-500 text-[11px] font-normal">
-                    (Auto calculated)
+                  <th className="p-2">
+                    <input
+                      type="text"
+                      placeholder="Min hrs (e.g. 8)..."
+                      value={columnFilters.working_hour || ''}
+                      onChange={(e) => updateColumnFilter('working_hour', e.target.value)}
+                      className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
+                    />
                   </th>
                 </tr>
               </thead>

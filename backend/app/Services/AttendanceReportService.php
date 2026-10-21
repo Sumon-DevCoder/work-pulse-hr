@@ -29,7 +29,8 @@ class AttendanceReportService
 
         $query = DB::table('tbl_attendance_log as l')
             ->leftJoin('tbl_employee as e', function ($join) {
-                $join->on('e.id', '=', 'l.emp_id');
+                $join->on('e.id', '=', 'l.emp_id')
+                     ->orOn('e.emp_id', '=', 'l.emp_id');
             })
             ->select([
                 'l.id',
@@ -44,7 +45,10 @@ class AttendanceReportService
 
         // 1. Employee Filter (Specific ID or ALL)
         if (!empty($empId) && strtolower($empId) !== 'all') {
-            $query->where('l.emp_id', $empId);
+            $query->where(function ($q) use ($empId) {
+                $q->where('l.emp_id', $empId)
+                  ->orWhere('e.emp_id', $empId);
+            });
         }
 
         // 2. Date Range Filter
@@ -130,7 +134,10 @@ class AttendanceReportService
 
         // Build base aggregation subquery
         $query = DB::table('tbl_attendance_log as l')
-            ->leftJoin('tbl_employee as e', 'e.id', '=', 'l.emp_id')
+            ->leftJoin('tbl_employee as e', function ($join) {
+                $join->on('e.id', '=', 'l.emp_id')
+                     ->orOn('e.emp_id', '=', 'l.emp_id');
+            })
             ->select([
                 'l.emp_id',
                 DB::raw("COALESCE(e.emp_name, CONCAT('Employee #', l.emp_id)) as emp_name"),
@@ -144,7 +151,10 @@ class AttendanceReportService
 
         // 1. Employee Filter
         if (!empty($empId) && strtolower($empId) !== 'all') {
-            $query->where('l.emp_id', $empId);
+            $query->where(function ($q) use ($empId) {
+                $q->where('l.emp_id', $empId)
+                  ->orWhere('e.emp_id', $empId);
+            });
         }
 
         // 2. Date Range
@@ -185,6 +195,17 @@ class AttendanceReportService
         }
         if (!empty($columnFilters['logout_time'])) {
             $outerQuery->where('logout_time', 'like', "%{$columnFilters['logout_time']}%");
+        }
+        if (!empty($columnFilters['working_hour'])) {
+            $term = trim($columnFilters['working_hour']);
+            if (is_numeric($term)) {
+                $outerQuery->where('working_seconds', '>=', (float) $term * 3600);
+            } else {
+                preg_match('/(\d+(?:\.\d+)?)/', $term, $matches);
+                if (!empty($matches[1])) {
+                    $outerQuery->where('working_seconds', '>=', (float) $matches[1] * 3600);
+                }
+            }
         }
 
         // 5. Sorting

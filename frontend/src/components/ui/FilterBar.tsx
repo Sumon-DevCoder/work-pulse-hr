@@ -20,34 +20,57 @@ export default function FilterBar({
   showEmployeeFilter = true,
 }: FilterBarProps) {
   const [empId, setEmpId] = useState(initialEmpId);
+  const [empInput, setEmpInput] = useState(initialEmpId);
   const [fromDate, setFromDate] = useState(initialFromDate);
   const [toDate, setToDate] = useState(initialToDate);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [empSearch, setEmpSearch] = useState('');
   const [loadingEmployees, setLoadingEmployees] = useState(false);
 
-  // Fetch initial employee list
+  // Fetch employee list (supports search debounce)
   useEffect(() => {
     if (!showEmployeeFilter) return;
 
     let isMounted = true;
     setLoadingEmployees(true);
 
-    fetchApi<{ data: Employee[] }>('/employees', { limit: 50, search: empSearch })
-      .then((res) => {
-        if (isMounted) {
-          setEmployees(res.data || []);
-        }
-      })
-      .catch((err) => console.error('Failed to load employees', err))
-      .finally(() => {
-        if (isMounted) setLoadingEmployees(false);
-      });
+    const timer = setTimeout(() => {
+      fetchApi<{ data: Employee[] }>('/employees', { limit: 50, search: empSearch })
+        .then((res) => {
+          if (isMounted) {
+            setEmployees(res.data || []);
+          }
+        })
+        .catch((err) => console.error('Failed to load employees', err))
+        .finally(() => {
+          if (isMounted) setLoadingEmployees(false);
+        });
+    }, 200);
 
     return () => {
       isMounted = false;
+      clearTimeout(timer);
     };
   }, [empSearch, showEmployeeFilter]);
+
+  const handleEmpInputChange = (value: string) => {
+    setEmpInput(value);
+    setEmpSearch(value);
+
+    const trimmed = value.trim();
+    if (!trimmed || trimmed.toLowerCase() === 'all' || trimmed.toLowerCase().includes('all employee')) {
+      setEmpId('');
+      return;
+    }
+
+    // If user clicked or typed format "198276 - Mr. ABC" or raw "198276"
+    const match = trimmed.match(/^(\w+[\w-]*)/);
+    if (match) {
+      setEmpId(match[1]);
+    } else {
+      setEmpId(trimmed);
+    }
+  };
 
   const handleApply = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -60,6 +83,8 @@ export default function FilterBar({
 
   const handleReset = () => {
     setEmpId('');
+    setEmpInput('');
+    setEmpSearch('');
     setFromDate('');
     setToDate('');
     onFilterChange({ emp_id: '', from_date: '', to_date: '' });
@@ -92,27 +117,48 @@ export default function FilterBar({
   return (
     <div className="glass-card rounded-2xl p-5 border border-slate-800 shadow-xl mb-6">
       <form onSubmit={handleApply} className="flex flex-wrap items-end gap-4">
-        {/* Employee Filter */}
+        {/* Employee Filter: Search ID/Name or Select from list or All */}
         {showEmployeeFilter && (
-          <div className="flex-1 min-w-[240px]">
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5 text-indigo-400" />
-              Employee Filter
+          <div className="flex-1 min-w-[260px]">
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-indigo-400" />
+                Employee Name & ID
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">Search ID/Name or Select</span>
             </label>
             <div className="relative">
-              <select
-                value={empId}
-                onChange={(e) => setEmpId(e.target.value)}
-                className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
-              >
-                <option value="">All Employees (Default)</option>
-                <option value="198276">198276 - Mr. ABC (Assessment Spec)</option>
+              <input
+                type="text"
+                list="employee-suggestions"
+                placeholder="Type ID, Name or Select from list..."
+                value={empInput}
+                onChange={(e) => handleEmpInputChange(e.target.value)}
+                className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-3.5 pr-8 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-slate-500"
+              />
+              {empInput && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmpInput('');
+                    setEmpId('');
+                    setEmpSearch('');
+                  }}
+                  className="absolute right-2.5 top-3 text-slate-400 hover:text-slate-200 cursor-pointer"
+                  title="Clear Employee Filter"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
+              )}
+              <datalist id="employee-suggestions">
+                <option value="All">All Employees (Reset Filter)</option>
+                <option value="198276 - Mr. ABC (Assessment Spec)">198276</option>
                 {employees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.id} - {emp.emp_name} ({emp.designation})
+                  <option key={emp.id} value={`${emp.id} - ${emp.emp_name}`}>
+                    {emp.designation} {emp.emp_id ? `[Code: ${emp.emp_id}]` : ''}
                   </option>
                 ))}
-              </select>
+              </datalist>
             </div>
           </div>
         )}

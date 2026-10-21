@@ -32,7 +32,20 @@ class AttendanceReportController extends Controller
             'filters.emp_name' => 'nullable|string|max:100',
             'filters.date_time' => 'nullable|string|max:50',
             'filters.in_out' => 'nullable|string|max:10',
+            // Fallback for flat query parameters
+            'col_emp_id' => 'nullable|string|max:50',
+            'col_emp_name' => 'nullable|string|max:100',
+            'col_date_time' => 'nullable|string|max:50',
+            'col_in_out' => 'nullable|string|max:10',
         ]);
+
+        // Merge flat column filters if passed
+        $filters = $validated['filters'] ?? [];
+        if ($request->filled('col_emp_id')) $filters['emp_id'] = $request->input('col_emp_id');
+        if ($request->filled('col_emp_name')) $filters['emp_name'] = $request->input('col_emp_name');
+        if ($request->filled('col_date_time')) $filters['date_time'] = $request->input('col_date_time');
+        if ($request->filled('col_in_out')) $filters['in_out'] = $request->input('col_in_out');
+        $validated['filters'] = $filters;
 
         $paginated = $this->reportService->getInOutLogs($validated);
 
@@ -70,7 +83,25 @@ class AttendanceReportController extends Controller
             'filters.designation' => 'nullable|string|max:100',
             'filters.login_time' => 'nullable|string|max:50',
             'filters.logout_time' => 'nullable|string|max:50',
+            'filters.working_hour' => 'nullable|string|max:50',
+            // Fallback for flat query parameters
+            'col_emp_id' => 'nullable|string|max:50',
+            'col_emp_name' => 'nullable|string|max:100',
+            'col_designation' => 'nullable|string|max:100',
+            'col_login_time' => 'nullable|string|max:50',
+            'col_logout_time' => 'nullable|string|max:50',
+            'col_working_hour' => 'nullable|string|max:50',
         ]);
+
+        // Merge flat column filters if passed
+        $filters = $validated['filters'] ?? [];
+        if ($request->filled('col_emp_id')) $filters['emp_id'] = $request->input('col_emp_id');
+        if ($request->filled('col_emp_name')) $filters['emp_name'] = $request->input('col_emp_name');
+        if ($request->filled('col_designation')) $filters['designation'] = $request->input('col_designation');
+        if ($request->filled('col_login_time')) $filters['login_time'] = $request->input('col_login_time');
+        if ($request->filled('col_logout_time')) $filters['logout_time'] = $request->input('col_logout_time');
+        if ($request->filled('col_working_hour')) $filters['working_hour'] = $request->input('col_working_hour');
+        $validated['filters'] = $filters;
 
         $paginated = $this->reportService->getWorkingHoursSummary($validated);
 
