@@ -1,7 +1,6 @@
 # Ignored files requested
 tbl_attendance_log.sql/
 tbl_attendance_log.sql
-README.md
 
 # Database dumps & CSV/SQL files
 *.sql
