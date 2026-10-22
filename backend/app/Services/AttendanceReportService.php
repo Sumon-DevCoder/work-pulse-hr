@@ -113,6 +113,7 @@ class AttendanceReportService
             $item->sl = ($paginated->currentPage() - 1) * $paginated->perPage() + $key + 1;
             $rawStatus = strtoupper((string) $item->in_out);
             $item->in_out_status = str_contains($rawStatus, 'IN') ? 'IN' : 'OUT';
+            $item->date_time_12h = !empty($item->date_time) ? date('h:i:s A', strtotime($item->date_time)) : null;
             return $item;
         });
 
@@ -243,6 +244,9 @@ class AttendanceReportService
                 $item->working_hour = 'N/A';
                 $item->working_hours_decimal = 0.0;
             }
+
+            $item->login_time_12h = !empty($item->login_time) ? date('h:i:s A', strtotime($item->login_time)) : null;
+            $item->logout_time_12h = !empty($item->logout_time) ? date('h:i:s A', strtotime($item->logout_time)) : null;
 
             return $item;
         });

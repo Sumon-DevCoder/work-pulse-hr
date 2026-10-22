@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import FilterBar from '@/components/ui/FilterBar';
-import { fetchApi, InOutLogItem, PaginatedResponse } from '@/lib/api';
+import { fetchApi, InOutLogItem, PaginatedResponse, formatTime12h } from '@/lib/api';
 import {
   FileSpreadsheet,
   Search,
@@ -268,7 +268,27 @@ export default function InOutReportPage() {
                         {row.emp_id}
                       </td>
                       <td className="py-3 px-4 font-medium text-slate-200">{row.emp_name}</td>
-                      <td className="py-3 px-4 font-mono text-xs text-slate-300">{row.date_time}</td>
+                      <td className="py-3 px-4">
+                        {(() => {
+                          const formatted = formatTime12h(row.date_time);
+                          if (!formatted) return <span className="font-mono text-xs text-slate-300">{row.date_time}</span>;
+                          return (
+                            <div className="flex flex-col">
+                              <span className="font-mono text-xs text-slate-200 font-medium inline-flex items-center gap-1.5">
+                                {formatted.time}
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 border border-indigo-500/30">
+                                  {formatted.ampm}
+                                </span>
+                              </span>
+                              {formatted.date && (
+                                <span className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                  {formatted.date}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </td>
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${

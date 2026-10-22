@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import FilterBar from '@/components/ui/FilterBar';
-import { fetchApi, WorkingHourItem, PaginatedResponse } from '@/lib/api';
+import { fetchApi, WorkingHourItem, PaginatedResponse, formatTime12h } from '@/lib/api';
 import {
   Clock,
   Search,
@@ -310,11 +310,47 @@ export default function WorkingHoursReportPage() {
                           {row.designation}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-mono text-xs text-emerald-400 font-medium">
-                        {row.login_time || <span className="text-slate-600">No punch</span>}
+                      <td className="py-3 px-4">
+                        {(() => {
+                          const formatted = formatTime12h(row.login_time);
+                          if (!formatted) return <span className="text-slate-600 font-mono text-xs">No punch</span>;
+                          return (
+                            <div className="flex flex-col">
+                              <span className="font-mono text-xs text-emerald-400 font-semibold inline-flex items-center gap-1.5">
+                                {formatted.time}
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                  {formatted.ampm}
+                                </span>
+                              </span>
+                              {formatted.date && (
+                                <span className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                  {formatted.date}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
-                      <td className="py-3 px-4 font-mono text-xs text-rose-400 font-medium">
-                        {row.logout_time || <span className="text-slate-600">No punch</span>}
+                      <td className="py-3 px-4">
+                        {(() => {
+                          const formatted = formatTime12h(row.logout_time);
+                          if (!formatted) return <span className="text-slate-600 font-mono text-xs">No punch</span>;
+                          return (
+                            <div className="flex flex-col">
+                              <span className="font-mono text-xs text-rose-400 font-semibold inline-flex items-center gap-1.5">
+                                {formatted.time}
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                                  {formatted.ampm}
+                                </span>
+                              </span>
+                              {formatted.date && (
+                                <span className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                  {formatted.date}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="py-3 px-4">
                         {row.working_seconds > 0 ? (

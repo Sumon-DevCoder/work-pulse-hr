@@ -26,6 +26,7 @@ export interface InOutLogItem {
   emp_name: string;
   date: string;
   date_time: string;
+  date_time_12h?: string | null;
   in_out: string;
   in_out_status: 'IN' | 'OUT';
   terminal_id: string;
@@ -39,10 +40,39 @@ export interface WorkingHourItem {
   designation: string;
   date: string;
   login_time: string | null;
+  login_time_12h?: string | null;
   logout_time: string | null;
+  logout_time_12h?: string | null;
   working_hour: string;
   working_hours_decimal: number;
   working_seconds: number;
+}
+
+export function formatTime12h(dateTimeStr?: string | null): { date: string; time: string; ampm: 'AM' | 'PM' } | null {
+  if (!dateTimeStr) return null;
+  const parts = dateTimeStr.trim().split(' ');
+  const datePart = parts.length > 1 ? parts[0] : '';
+  const timePart = parts.length > 1 ? parts[1] : parts[0];
+
+  const timeMatch = timePart.split(':');
+  if (timeMatch.length < 2) return null;
+
+  let hour = parseInt(timeMatch[0], 10);
+  const min = timeMatch[1];
+  const sec = timeMatch[2] || '00';
+
+  if (isNaN(hour)) return null;
+
+  const ampm: 'AM' | 'PM' = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+  const formattedHour = String(hour).padStart(2, '0');
+
+  return {
+    date: datePart,
+    time: `${formattedHour}:${min}:${sec}`,
+    ampm,
+  };
 }
 
 export interface PaginatedResponse<T> {
