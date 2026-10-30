@@ -115,17 +115,17 @@ export default function FilterBar({
   };
 
   return (
-    <div className="glass-card rounded-2xl p-5 border border-slate-800 shadow-xl mb-6">
-      <form onSubmit={handleApply} className="flex flex-wrap items-end gap-4">
+    <div className="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl mb-6">
+      <form onSubmit={handleApply} className="flex flex-col lg:flex-row lg:items-end gap-3 sm:gap-4">
         {/* Employee Filter: Search ID/Name or Select from list or All */}
         {showEmployeeFilter && (
-          <div className="flex-1 min-w-[260px]">
+          <div className="w-full lg:flex-1 lg:min-w-[240px]">
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5 text-indigo-400" />
                 Employee Name & ID
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">Search ID/Name or Select</span>
+              <span className="text-[10px] text-slate-500 font-mono hidden xs:inline sm:inline">Search ID/Name or Select</span>
             </label>
             <div className="relative">
               <input
@@ -147,7 +147,7 @@ export default function FilterBar({
                   className="absolute right-2.5 top-3 text-slate-400 hover:text-slate-200 cursor-pointer"
                   title="Clear Employee Filter"
                 >
-                  <RotateCcw className="h-3.5 w-3.5" />
+                  <RotateCcw className="h-3.5 w-3.5 cursor-pointer" />
                 </button>
               )}
               <datalist id="employee-suggestions">
@@ -163,59 +163,62 @@ export default function FilterBar({
           </div>
         )}
 
-        {/* Date Range: From */}
-        <div className="w-[180px]">
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-indigo-400" />
-            From Date
-          </label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
-          />
-        </div>
+        {/* Date Pickers Container */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full lg:w-auto">
+          {/* Date Range: From */}
+          <div className="w-full sm:w-[170px]">
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-indigo-400" />
+              From Date
+            </label>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
+            />
+          </div>
 
-        {/* Date Range: To */}
-        <div className="w-[180px]">
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-indigo-400" />
-            To Date
-          </label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
-          />
+          {/* Date Range: To */}
+          <div className="w-full sm:w-[170px]">
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-indigo-400" />
+              To Date
+            </label>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
+            />
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full lg:w-auto pt-1 lg:pt-0">
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+            className="flex-1 lg:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
           >
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4 cursor-pointer" />
             Apply Filters
           </button>
 
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 active:scale-95 text-slate-300 text-sm font-medium border border-slate-700 transition-all cursor-pointer"
+            className="flex-1 lg:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 active:scale-95 text-slate-300 text-sm font-medium border border-slate-700 transition-all cursor-pointer"
             title="Reset Filters"
           >
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-4 w-4 cursor-pointer" />
             Reset
           </button>
         </div>
       </form>
 
       {/* Quick Filter Presets */}
-      <div className="mt-4 pt-3.5 border-t border-slate-800/80 flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-slate-400 font-medium mr-1">Quick Presets:</span>
+      <div className="mt-4 pt-3.5 border-t border-slate-800/80 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <span className="text-xs text-slate-400 font-medium mr-1 w-full sm:w-auto">Quick Presets:</span>
         <button
           type="button"
           onClick={() => applyPreset('30')}

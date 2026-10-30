@@ -148,7 +148,7 @@ class AttendanceReportService
             ->select([
                 'l.emp_id',
                 DB::raw("COALESCE(e.emp_name, CONCAT('Employee #', l.emp_id)) as emp_name"),
-                DB::raw("COALESCE(e.designation, 'Operator') as designation"),
+                DB::raw("COALESCE(e.designation, 'Operator') as designation"), 
                 'l.Date as date',
                 DB::raw("MIN(CASE WHEN l.in_out = 'logIN' THEN l.date_time END) AS login_time"),
                 DB::raw("MAX(CASE WHEN l.in_out = 'logOUT' THEN l.date_time END) AS logout_time"),

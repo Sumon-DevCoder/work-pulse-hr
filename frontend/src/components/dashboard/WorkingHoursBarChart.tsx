@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -147,19 +147,19 @@ export default function WorkingHoursBarChart({
   };
 
   // Dynamically calculate width if date range is large (e.g. 120 days) for smooth horizontal scrolling
-  const minWidth = Math.max(chartData.length * 28, 800);
+  const minWidth = Math.max(chartData.length * 28, 640);
 
   return (
-    <div className="glass-panel rounded-2xl p-6 border border-slate-800 shadow-2xl">
+    <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-slate-800 shadow-2xl">
       {/* Top Header & Metrics */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-white tracking-tight">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
               Daily Total Working Hours Analytics
             </h2>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              {chartData.length} Bars dynamically rendered ({dateRange.total_days} Days)
+              {chartData.length} Bars ({dateRange.total_days} Days)
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -169,10 +169,10 @@ export default function WorkingHoursBarChart({
         </div>
 
         {/* 30-Second Refresh Controller */}
-        <div className="flex items-center gap-3">
-          <div className="text-right">
+        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/80">
+          <div className="text-left sm:text-right">
             <div className="text-[11px] text-slate-400 font-medium">Auto-Refresh</div>
-            <div className="text-xs font-bold text-emerald-400 flex items-center gap-1 justify-end">
+            <div className="text-xs font-bold text-emerald-400 flex items-center gap-1 sm:justify-end">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -188,45 +188,45 @@ export default function WorkingHoursBarChart({
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold border border-slate-700 transition-all cursor-pointer shadow-sm"
             title="Refresh now"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin text-indigo-400' : 'text-slate-300'}`} />
+            <RefreshCw className={`h-3.5 w-3.5 cursor-pointer ${isLoading ? 'animate-spin text-indigo-400' : 'text-slate-300'}`} />
             Refresh
           </button>
         </div>
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="glass-card rounded-xl p-4 border border-slate-800 flex items-center gap-3.5">
-          <div className="h-10 w-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="glass-card rounded-xl p-3.5 sm:p-4 border border-slate-800 flex items-center gap-3.5">
+          <div className="h-10 w-10 shrink-0 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
             <Clock className="h-5 w-5" />
           </div>
           <div>
             <div className="text-xs text-slate-400 font-medium">Grand Total Hours</div>
-            <div className="text-lg font-bold text-white tracking-tight">
+            <div className="text-base sm:text-lg font-bold text-white tracking-tight">
               {summary.grand_total_hours.toLocaleString()} <span className="text-xs text-slate-400 font-normal">hrs</span>
             </div>
           </div>
         </div>
 
-        <div className="glass-card rounded-xl p-4 border border-slate-800 flex items-center gap-3.5">
-          <div className="h-10 w-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+        <div className="glass-card rounded-xl p-3.5 sm:p-4 border border-slate-800 flex items-center gap-3.5">
+          <div className="h-10 w-10 shrink-0 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
             <Users className="h-5 w-5" />
           </div>
           <div>
             <div className="text-xs text-slate-400 font-medium">Daily Average Hours</div>
-            <div className="text-lg font-bold text-white tracking-tight">
+            <div className="text-base sm:text-lg font-bold text-white tracking-tight">
               {summary.average_daily_hours.toLocaleString()} <span className="text-xs text-slate-400 font-normal">hrs/day</span>
             </div>
           </div>
         </div>
 
-        <div className="glass-card rounded-xl p-4 border border-slate-800 flex items-center gap-3.5">
-          <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+        <div className="glass-card rounded-xl p-3.5 sm:p-4 border border-slate-800 flex items-center gap-3.5">
+          <div className="h-10 w-10 shrink-0 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
             <Flame className="h-5 w-5" />
           </div>
           <div>
             <div className="text-xs text-slate-400 font-medium">Peak Day Total</div>
-            <div className="text-lg font-bold text-white tracking-tight">
+            <div className="text-base sm:text-lg font-bold text-white tracking-tight">
               {summary.peak_day_hours.toLocaleString()} <span className="text-xs text-slate-400 font-normal">hrs</span>
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function WorkingHoursBarChart({
 
       {/* Chart Canvas Area */}
       <div className="relative overflow-x-auto pb-2">
-        <div style={{ minWidth: `${minWidth}px`, height: '380px' }}>
+        <div style={{ minWidth: `${minWidth}px`, height: '360px' }}>
           {chartData.length > 0 ? (
             <Bar data={data} options={options} />
           ) : (
@@ -245,6 +245,11 @@ export default function WorkingHoursBarChart({
           )}
         </div>
       </div>
+      {chartData.length > 15 && (
+        <p className="text-[11px] text-slate-500 text-right mt-1 sm:hidden">
+          Swipe horizontally to inspect daily bars →
+        </p>
+      )}
     </div>
   );
 }

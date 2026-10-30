@@ -1,14 +1,15 @@
-<?php
+<?php 
+// excutable php prograaming code
 
 use App\Http\Controllers\Api\AttendanceReportController;
 use App\Http\Controllers\Api\DashboardAnalyticsController;
 use App\Http\Controllers\Api\EmployeeController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 /*
 |--------------------------------------------------------------------------
-| WorkPulse HR API Routes
+| WorkPulse HR API Routes - scope resulation operator :: use kora hoyeche
 |--------------------------------------------------------------------------
 */
 

@@ -84,16 +84,16 @@ export default function InOutReportPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Page Header */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                <FileSpreadsheet className="h-6 w-6" />
+              <span className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shrink-0">
+                <FileSpreadsheet className="h-5 w-5 sm:h-6 sm:w-6" />
               </span>
               <div>
-                <h1 className="text-2xl font-black text-white tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                   Report 1: Employee In-Out Report
                 </h1>
                 <p className="text-xs text-slate-400">
@@ -104,7 +104,7 @@ export default function InOutReportPage() {
           </div>
 
           {/* Global Search Bar */}
-          <div className="w-full sm:w-72 relative">
+          <div className="w-full md:w-72 relative">
             <Search className="h-4 w-4 absolute left-3.5 top-3 text-slate-400" />
             <input
               type="text"
@@ -133,7 +133,7 @@ export default function InOutReportPage() {
         {/* Data Table Panel */}
         <div className="glass-panel rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
           {/* Spec Header Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-slate-900/95 border-b border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-slate-900/95 border-b border-slate-800">
             <div>
               <h2 className="text-sm font-bold text-white tracking-wide uppercase">In-Out Report</h2>
               <p className="text-xs font-mono text-indigo-400 mt-0.5">
@@ -159,8 +159,8 @@ export default function InOutReportPage() {
               {/* Header */}
               <thead>
                 <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-300 font-semibold text-xs tracking-wider uppercase">
-                  <th className="py-3.5 px-4 w-16 text-center">SL</th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 w-14 sm:w-16 min-w-[50px] text-center">SL</th>
+                  <th className="py-3.5 px-4 min-w-[130px]">
                     <button
                       type="button"
                       onClick={() => handleSort('emp_id')}
@@ -170,7 +170,7 @@ export default function InOutReportPage() {
                       <ArrowUpDown className="h-3.5 w-3.5 text-slate-500" />
                     </button>
                   </th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 min-w-[170px]">
                     <button
                       type="button"
                       onClick={() => handleSort('emp_name')}
@@ -180,7 +180,7 @@ export default function InOutReportPage() {
                       <ArrowUpDown className="h-3.5 w-3.5 text-slate-500" />
                     </button>
                   </th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 min-w-[150px]">
                     <button
                       type="button"
                       onClick={() => handleSort('date_time')}
@@ -190,7 +190,7 @@ export default function InOutReportPage() {
                       <ArrowUpDown className="h-3.5 w-3.5 text-slate-500" />
                     </button>
                   </th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 min-w-[130px]">
                     <button
                       type="button"
                       onClick={() => handleSort('in_out')}
@@ -320,8 +320,8 @@ export default function InOutReportPage() {
 
           {/* Pagination Controls */}
           {data && data.meta && (
-            <div className="p-4 bg-slate-900/80 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
-              <div>
+            <div className="p-4 bg-slate-900/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+              <div className="text-center sm:text-left">
                 Showing <span className="font-semibold text-slate-200">{data.meta.from || 0}</span> to{' '}
                 <span className="font-semibold text-slate-200">{data.meta.to || 0}</span> of{' '}
                 <span className="font-semibold text-slate-200">{data.meta.total.toLocaleString()}</span> entries
@@ -334,7 +334,7 @@ export default function InOutReportPage() {
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 border border-slate-700 cursor-pointer transition-all"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4 cursor-pointer" />
                   Previous
                 </button>
 
@@ -349,7 +349,7 @@ export default function InOutReportPage() {
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 border border-slate-700 cursor-pointer transition-all"
                 >
                   Next
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 cursor-pointer" />
                 </button>
               </div>
             </div>
